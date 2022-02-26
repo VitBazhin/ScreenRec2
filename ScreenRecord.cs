@@ -10,7 +10,6 @@ using System.Runtime.InteropServices;
 using System.Diagnostics;
 
 using Accord.Video.FFMPEG;
-//using Accord;
 
 namespace ScreenRec2
 {
@@ -73,16 +72,12 @@ namespace ScreenRec2
             watch.Start();
             using (Bitmap bitmap = new Bitmap(bounds.Width, bounds.Height))
             {
-
-
                 using (Graphics graphics = Graphics.FromImage(bitmap))
                 {
                     graphics.CopyFromScreen(new Point(bounds.Left, bounds.Right), Point.Empty, bounds.Size);
                     string name = $"{tempPath}//screenshot_{fileCount++}.png";
                     inputImagesSequence.Add(name);
-
                 }
-                bitmap.Dispose();//? using already dispose
             }
         }
 
