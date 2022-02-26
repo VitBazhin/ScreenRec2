@@ -12,7 +12,7 @@ using System.Diagnostics;
 using Accord.Video.FFMPEG;
 //using Accord;
 
-namespace ScreenRec
+namespace ScreenRec2
 {
     internal class ScreenRecord
     {

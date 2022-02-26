@@ -3,18 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Drawing;
 
 using Accord.Video.FFMPEG;
 
 namespace ScreenRec2
 {
-    class Program
+    public class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             Console.WriteLine("Start");
 
-            //new ScreenRecord();
+            new ScreenRecord(new Rectangle(0, 0, 1000, 800), "");
 
             Console.WriteLine("End");
             Console.ReadLine();
