@@ -87,17 +87,62 @@ namespace ScreenRec2
             _ = NativeMethods.Record("record recsound", "", 0, 0);
         }
 
-        //Timer timer = new Timer(new TimerCallback(new ));
-        internal void SaveVideo(int width, int height, int frameRate)
+        private void SaveVideo(int width, int height, int frameRate)
         {
-
-
             using (VideoFileWriter videoFileWriter = new VideoFileWriter())
             {
-
+                videoFileWriter.Open($"{outPath}//{videoName}", width, height, frameRate, VideoCodec.MPEG4);
+                foreach (var imagePath in inputImagesSequence)
+                {
+                    using (Bitmap bitmap = Image.FromFile(imagePath) as Bitmap)
+                    {
+                        videoFileWriter.WriteVideoFrame(bitmap);
+                    }
+                }
+                videoFileWriter.Close();
             }
-
-
         }
+
+        private void SaveAudio()
+        {
+            NativeMethods.Record($"save recsound {outPath}//{audioName}", "", 0, 0);
+            NativeMethods.Record("close recsound", "", 0, 0);
+        }
+
+        private void CombineVideoAndAudio(string video, string audio)
+        {
+            string command = $"/c ffmpeg -i \"{video}\" -i \"{audio}\" -shortest {finalName}";
+            ProcessStartInfo processStartInfo = new ProcessStartInfo 
+            {
+                CreateNoWindow = false,
+                FileName = "cmd.exe",
+                WorkingDirectory = outPath,
+                Arguments = command 
+            };
+            using (Process execProcess = Process.Start(processStartInfo))
+            {
+                execProcess.WaitForExit();
+            }
+        }
+
+        public void Stop()
+        {
+            watch.Stop();
+            int width = bounds.Width;
+            int height = bounds.Height;
+            int frameRate = 10;
+
+            SaveAudio();
+            SaveVideo(width, height, frameRate);
+
+            CombineVideoAndAudio(videoName, audioName);
+
+            DeletePath(tempPath);
+
+            //TODO
+            //DeleteFileExcept(outPath, $"{outPath}//{finalName}");
+        }
+
+        //Timer timer = new Timer(new TimerCallback(new ));
     }
 }
