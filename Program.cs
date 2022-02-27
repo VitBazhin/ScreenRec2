@@ -3,7 +3,6 @@ using System.Drawing;
 using System.Management;
 using System.Timers;
 using System.Configuration;
-using System.Linq;
 
 namespace ScreenRec2
 {
@@ -51,10 +50,10 @@ namespace ScreenRec2
             }
             
 
-            ManagementObjectSearcher searcher =
-                new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM Win32_VideoController");
+            var searcher = new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM Win32_VideoController");
             int width = 1920;
             int height = 1080;
+
             foreach (ManagementObject queryObj in searcher.Get())
             {
                 if (queryObj["CurrentHorizontalResolution"] != null)
@@ -66,11 +65,13 @@ namespace ScreenRec2
                     break;
                 }
             }
+            #region 2Method
             //foreach (var screen in System.Windows.Forms.Screen.AllScreens)
             //{
             //    Console.WriteLine(screen.Bounds.Width);
             //    Console.WriteLine(screen.Bounds.Height);
             //}
+            #endregion
 
             var screenRecord = new ScreenRecord(new Rectangle(0, 0, width, height), outputPath)
             {
@@ -82,7 +83,7 @@ namespace ScreenRec2
                 Interval = timerInterval
             };
 
-            timer.Elapsed += (s, e) => 
+            timer.Elapsed += (sender, e) => 
             {
                 screenRecord.RecordVideo();
                 screenRecord.RecordAudio();

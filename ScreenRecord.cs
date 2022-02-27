@@ -21,13 +21,11 @@ namespace ScreenRec2
         internal string FinalName { private get; set; } =  "FinalVideo.mp4";
 
         private readonly Stopwatch watch = new Stopwatch();
-
+        
         public static class NativeMethods
         {
             [DllImport("winmm.dll", EntryPoint = "mciSendStringA", CharSet = CharSet.Ansi, SetLastError = true, ExactSpelling = true)]
             public static extern int Record(string lpstrCommand, string lpstrReturnString, int uReturnLength, int hwndCallback);
-
-            public static bool IsRunning { get; private set; }
         }
 
         internal ScreenRecord(Rectangle bounds, string outPath)
@@ -57,10 +55,10 @@ namespace ScreenRec2
             Directory.Delete(targetDirName, false);
         }
 
-        public string GetElapsed()
-        {
-            return string.Format("{0:D2}:{1:D2}:{2:D2}", watch.Elapsed.Hours, watch.Elapsed.Minutes, watch.Elapsed.Seconds);
-        }
+        //public string GetElapsed()
+        //{
+        //    return string.Format("{0:D2}:{1:D2}:{2:D2}", watch.Elapsed.Hours, watch.Elapsed.Minutes, watch.Elapsed.Seconds);
+        //}
 
         public void RecordVideo()
         {
