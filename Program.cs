@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Management;
-
-
+using System.Timers;
 
 namespace ScreenRec2
 {
@@ -33,9 +32,27 @@ namespace ScreenRec2
             //}
 
             var screenRecord = new ScreenRecord(new Rectangle(0, 0, width, height), "_");
+
+            Timer timer = new Timer
+            {
+                Interval = 10
+            };
+
+            timer.Elapsed += (s, e) => 
+            {
+                screenRecord.RecordVideo();
+                screenRecord.RecordAudio();
+            };
+            // Timer_Elapsed;
             //screenRecord.RecordVideo();
             Console.WriteLine("End");
             Console.ReadLine();
         }
+
+        //private static void Timer_Elapsed(object sender, ElapsedEventArgs e)
+        //{
+        //    throw new NotImplementedException();
+        //}
+
     }
 }

@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
-using System.Drawing.Imaging;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Diagnostics;
 
 using Accord.Video.FFMPEG;
 
@@ -143,6 +138,5 @@ namespace ScreenRec2
             //DeleteFileExcept(outPath, $"{outPath}//{finalName}");
         }
 
-        //Timer timer = new Timer(new TimerCallback(new ));
     }
 }
