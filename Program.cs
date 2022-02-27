@@ -2,6 +2,8 @@
 using System.Drawing;
 using System.Management;
 using System.Timers;
+using System.Configuration;
+using System.Linq;
 
 namespace ScreenRec2
 {
@@ -10,6 +12,45 @@ namespace ScreenRec2
         public static void Main(string[] args)
         {
             Console.WriteLine("Start");
+            var appSettings = ConfigurationManager.AppSettings;
+
+            bool TryGetSetting(string key, out string result)
+            {
+                result = "";
+                try
+                {
+                    result = appSettings[key];
+                    if (string.IsNullOrEmpty(result))
+                    {
+                        Console.WriteLine($"Not Found {key}");
+                        return false;
+                    }
+                    Console.WriteLine($"Found {result}");
+                    return true;
+                }
+                catch (ConfigurationErrorsException ex)
+                {
+                    Console.WriteLine($"Error reading app settings {ex}");
+                    return false;
+                }
+            }
+            string outputPath;
+            int timerInterval = 10;
+            string timerIntervalSetting;
+            string finalName;
+
+            if (!(TryGetSetting(nameof(outputPath), out outputPath)
+                && TryGetSetting(nameof(timerIntervalSetting), out timerIntervalSetting)
+                && int.TryParse(timerIntervalSetting, out timerInterval)
+                && TryGetSetting(nameof(finalName), out finalName)
+                ))
+            {
+                Console.WriteLine("Exit");
+                Console.ReadLine();
+                return;
+            }
+            
+
             ManagementObjectSearcher searcher =
                 new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM Win32_VideoController");
             int width = 1920;
@@ -31,11 +72,14 @@ namespace ScreenRec2
             //    Console.WriteLine(screen.Bounds.Height);
             //}
 
-            var screenRecord = new ScreenRecord(new Rectangle(0, 0, width, height), "_");
+            var screenRecord = new ScreenRecord(new Rectangle(0, 0, width, height), outputPath)
+            {
+                FinalName = finalName
+            };
 
             Timer timer = new Timer
             {
-                Interval = 10
+                Interval = timerInterval
             };
 
             timer.Elapsed += (s, e) => 
@@ -45,6 +89,15 @@ namespace ScreenRec2
             };
             // Timer_Elapsed;
             //screenRecord.RecordVideo();
+            //ConsoleKeyInfo consoleKeykey = Console.ReadKey();
+            //Console.Read();
+            //ConsoleKey[] consoleKeys = new ConsoleKey[] { ConsoleKey.Z, ConsoleKey.C };
+            //Console.WriteLine(Console.ReadKey().Key);
+            //Console.WriteLine(consoleKeys.Any(k => k == Console.ReadKey().Key));
+            //while (consoleKeys.Any(k => k == Console.ReadKey().Key))
+            //{
+            //    Console.WriteLine("While");
+            //}
             Console.WriteLine("End");
             Console.ReadLine();
         }

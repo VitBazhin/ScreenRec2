@@ -18,9 +18,9 @@ namespace ScreenRec2
 
         private string audioName = "mic.wav";
         private string videoName = "video.mp4";
-        private string finalName = "FinalVideo.mp4";
+        internal string FinalName { private get; set; } =  "FinalVideo.mp4";
 
-        Stopwatch watch = new Stopwatch();
+        private readonly Stopwatch watch = new Stopwatch();
 
         public static class NativeMethods
         {
@@ -106,7 +106,7 @@ namespace ScreenRec2
 
         private void CombineVideoAndAudio(string video, string audio)
         {
-            string command = $"/c ffmpeg -i \"{video}\" -i \"{audio}\" -shortest {finalName}";
+            string command = $"/c ffmpeg -i \"{video}\" -i \"{audio}\" -shortest {FinalName}";
             ProcessStartInfo processStartInfo = new ProcessStartInfo 
             {
                 CreateNoWindow = false,
