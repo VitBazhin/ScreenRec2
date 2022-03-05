@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Runtime.InteropServices;
 
@@ -30,6 +31,8 @@ namespace ScreenRec2
 
         internal ScreenRecord(Rectangle bounds, string outPath)
         {
+            CreateTempDirectory("screenshots");
+
             this.bounds = bounds;
             this.outPath = outPath;
         }
@@ -41,18 +44,25 @@ namespace ScreenRec2
             tempPath = pathName;
         }
 
-        private void DeletePath(string targetDirName)
+        private void DeleteFiles(string targetDirName, string exceptFileName = "")
         {
-            foreach (var file in Directory.GetFiles(targetDirName))
+            bool notExistsException = string.IsNullOrEmpty(exceptFileName);
+            foreach (var fileName in Directory.GetFiles(targetDirName))
             {
-                File.SetAttributes(file, FileAttributes.Normal);
-                File.Delete(file);
+                if (notExistsException || exceptFileName != fileName)
+                {
+                    File.SetAttributes(fileName, FileAttributes.Normal);
+                    File.Delete(fileName);
+                }
             }
             foreach (var dir in Directory.GetDirectories(targetDirName))
             {
-                DeletePath(dir);
+                DeleteFiles(dir);
             }
-            Directory.Delete(targetDirName, false);
+            if (notExistsException)
+            {
+                Directory.Delete(targetDirName, false);
+            }
         }
 
         //public string GetElapsed()
@@ -69,6 +79,7 @@ namespace ScreenRec2
                 {
                     graphics.CopyFromScreen(new Point(bounds.Left, bounds.Right), Point.Empty, bounds.Size);
                     string name = $"{tempPath}//screenshot_{fileCount++}.png";
+                    bitmap.Save(name, ImageFormat.Png);
                     inputImagesSequence.Add(name);
                 }
             }
@@ -130,10 +141,8 @@ namespace ScreenRec2
 
             CombineVideoAndAudio(videoName, audioName);
 
-            DeletePath(tempPath);
-
-            //TODO
-            //DeleteFileExcept(outPath, $"{outPath}//{finalName}");
+            DeleteFiles(tempPath);
+            DeleteFiles(outPath, $"{outPath}//{FinalName}");
         }
 
     }
