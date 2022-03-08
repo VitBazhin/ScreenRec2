@@ -60,8 +60,7 @@ namespace ScreenRec2
                 {
                     width = int.Parse(queryObj["CurrentHorizontalResolution"].ToString());
                     height = int.Parse(queryObj["CurrentVerticalResolution"].ToString());
-                    Console.WriteLine(width);
-                    Console.WriteLine(height);
+                    Console.WriteLine($"{width}x{height}");
                     break;
                 }
             }
@@ -88,24 +87,47 @@ namespace ScreenRec2
                 screenRecord.RecordVideo();
                 screenRecord.RecordAudio();
             };
-            // Timer_Elapsed;
-            //screenRecord.RecordVideo();
-            //ConsoleKeyInfo consoleKeykey = Console.ReadKey();
-            //Console.Read();
-            //ConsoleKey[] consoleKeys = new ConsoleKey[] { ConsoleKey.Z, ConsoleKey.C };
-            //Console.WriteLine(Console.ReadKey().Key);
-            //Console.WriteLine(consoleKeys.Any(k => k == Console.ReadKey().Key));
-            //while (consoleKeys.Any(k => k == Console.ReadKey().Key))
-            //{
-            //    Console.WriteLine("While");
-            //}
-            Console.WriteLine("End");
+            //timer.Elapsed += Timer_Elapsed;
+
+            bool isExit = false;
+            do
+            {
+                var readKey = Console.ReadKey();
+                if ((readKey.Modifiers == ConsoleModifiers.Control
+                    && readKey.Key == ConsoleKey.Z)
+                    || 
+                    (
+                    (readKey.Modifiers & ConsoleModifiers.Control) != 0
+                    && (readKey.Modifiers & ConsoleModifiers.Shift) != 0
+                    && readKey.Key == ConsoleKey.X
+                    ))
+                {
+                    Console.WriteLine("Exit");
+                    isExit = true;
+                }
+                else if (readKey.Modifiers == ConsoleModifiers.Control
+                    && readKey.Key == ConsoleKey.R)
+                {
+                    Console.WriteLine("Start rec");
+                    timer.Start();
+                }
+                else if (readKey.Modifiers == ConsoleModifiers.Control
+                    && readKey.Key == ConsoleKey.W)
+                {
+                    Console.WriteLine("Stop rec");
+                    timer.Stop();
+                    screenRecord.Stop();
+                }
+            } while (!isExit);
+
+            Console.WriteLine("End. Pess Enter");
             Console.ReadLine();
         }
 
         //private static void Timer_Elapsed(object sender, ElapsedEventArgs e)
         //{
-        //    throw new NotImplementedException();
+        //    ((ScreenRecord)sender).RecordVideo();
+        //    ((ScreenRecord)sender).RecordAudio();
         //}
 
     }
