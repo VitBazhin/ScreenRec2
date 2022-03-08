@@ -4,7 +4,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Runtime.InteropServices;
-
+using System.Threading;
 using Accord.Video.FFMPEG;
 
 namespace ScreenRec2
@@ -15,7 +15,7 @@ namespace ScreenRec2
         private string outPath;
         private string tempPath;
         private int fileCount = 1;
-        private List<string> inputImagesSequence = new List<string>();
+        private List<string> inputImagesSequence = new List<string>() { };
 
         private readonly string audioName = "mic.wav";
         private readonly string videoName = "video.mp4";
@@ -132,7 +132,10 @@ namespace ScreenRec2
             int height = bounds.Height;
             int frameRate = 10;
 
+            Thread.Sleep(1000);
             SaveAudio();
+            
+            Thread.Sleep(1000);
             SaveVideo(width, height, frameRate);
 
             CombineVideoAndAudio(videoName, audioName);
