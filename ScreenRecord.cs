@@ -17,9 +17,9 @@ namespace ScreenRec2
         private int fileCount = 1;
         private List<string> inputImagesSequence = new List<string>();
 
-        private string audioName = "mic.wav";
-        private string videoName = "video.mp4";
-        internal string FinalName { private get; set; } =  "FinalVideo.mp4";
+        private readonly string audioName = "mic.wav";
+        private readonly string videoName = "video.mp4";
+        private readonly string finalName = "FinalVideo.mp4";
 
         private readonly Stopwatch watch = new Stopwatch();
         
@@ -29,21 +29,17 @@ namespace ScreenRec2
             public static extern int Record(string lpstrCommand, string lpstrReturnString, int uReturnLength, int hwndCallback);
         }
 
-        internal ScreenRecord(Rectangle bounds, string outPath)
+        internal ScreenRecord(Rectangle bounds, string outPath, string tempPath, string finalName)
         {
-            CreateTempDirectory("screenshots");
+            Directory.CreateDirectory(tempPath);
+            Directory.CreateDirectory(outPath);
 
             this.bounds = bounds;
             this.outPath = outPath;
+            this.finalName = finalName;
+            this.tempPath = tempPath;
         }
-
-        private void CreateTempDirectory(string name)
-        {
-            string pathName = $"C://{name}";
-            Directory.CreateDirectory(pathName);
-            tempPath = pathName;
-        }
-
+                
         private void DeleteFiles(string targetDirName, string exceptFileName = "")
         {
             bool notExistsException = string.IsNullOrEmpty(exceptFileName);
@@ -77,7 +73,7 @@ namespace ScreenRec2
             {
                 using (Graphics graphics = Graphics.FromImage(bitmap))
                 {
-                    graphics.CopyFromScreen(new Point(bounds.Left, bounds.Right), Point.Empty, bounds.Size);
+                    graphics.CopyFromScreen(new Point(bounds.Left, bounds.Top), Point.Empty, bounds.Size);
                     string name = $"{tempPath}//screenshot_{fileCount++}.png";
                     bitmap.Save(name, ImageFormat.Png);
                     inputImagesSequence.Add(name);
@@ -115,7 +111,7 @@ namespace ScreenRec2
 
         private void CombineVideoAndAudio(string video, string audio)
         {
-            string command = $"/c ffmpeg -i \"{video}\" -i \"{audio}\" -shortest {FinalName}";
+            string command = $"/c ffmpeg -i \"{video}\" -i \"{audio}\" -shortest {finalName}";
             ProcessStartInfo processStartInfo = new ProcessStartInfo 
             {
                 CreateNoWindow = false,
@@ -142,7 +138,7 @@ namespace ScreenRec2
             CombineVideoAndAudio(videoName, audioName);
 
             DeleteFiles(tempPath);
-            DeleteFiles(outPath, $"{outPath}//{FinalName}");
+            //DeleteFiles(outPath, $"{outPath}//{finalName}");
         }
 
     }

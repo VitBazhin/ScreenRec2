@@ -34,6 +34,7 @@ namespace ScreenRec2
                 }
             }
             string outputPath;
+            string tempPath;
             string timerIntervalSetting;
             string finalName;
 
@@ -41,13 +42,13 @@ namespace ScreenRec2
                 && TryGetSetting(nameof(timerIntervalSetting), out timerIntervalSetting)
                 && int.TryParse(timerIntervalSetting, out int timerInterval)
                 && TryGetSetting(nameof(finalName), out finalName)
+                && TryGetSetting(nameof(tempPath), out tempPath)
                 ))
             {
                 Console.WriteLine("GetSettingError. Press Enter for exit and fix app.config");
                 Console.ReadLine();
                 return;
             }
-            Console.WriteLine($"{outputPath}\n{timerInterval}\n{finalName}");
 
             var searcher = new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM Win32_VideoController");
             int width = 1920;
@@ -71,10 +72,7 @@ namespace ScreenRec2
             //}
             #endregion
 
-            var screenRecord = new ScreenRecord(new Rectangle(0, 0, width, height), outputPath)
-            {
-                FinalName = finalName
-            };
+            ScreenRecord screenRecord = new ScreenRecord(new Rectangle(0, 0, width, height), outputPath, tempPath, finalName);
 
             Timer timer = new Timer
             {
