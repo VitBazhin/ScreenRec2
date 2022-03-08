@@ -24,7 +24,7 @@ namespace ScreenRec2
                         Console.WriteLine($"Not Found {key}");
                         return false;
                     }
-                    Console.WriteLine($"Found {result}");
+                    Console.WriteLine($"{key}= {result}");
                     return true;
                 }
                 catch (ConfigurationErrorsException ex)
@@ -34,21 +34,20 @@ namespace ScreenRec2
                 }
             }
             string outputPath;
-            int timerInterval = 10;
             string timerIntervalSetting;
             string finalName;
 
             if (!(TryGetSetting(nameof(outputPath), out outputPath)
                 && TryGetSetting(nameof(timerIntervalSetting), out timerIntervalSetting)
-                && int.TryParse(timerIntervalSetting, out timerInterval)
+                && int.TryParse(timerIntervalSetting, out int timerInterval)
                 && TryGetSetting(nameof(finalName), out finalName)
                 ))
             {
-                Console.WriteLine("Exit");
+                Console.WriteLine("GetSettingError. Press Enter for exit and fix app.config");
                 Console.ReadLine();
                 return;
             }
-            
+            Console.WriteLine($"{outputPath}\n{timerInterval}\n{finalName}");
 
             var searcher = new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM Win32_VideoController");
             int width = 1920;
@@ -99,8 +98,7 @@ namespace ScreenRec2
                     (
                     (readKey.Modifiers & ConsoleModifiers.Control) != 0
                     && (readKey.Modifiers & ConsoleModifiers.Shift) != 0
-                    && readKey.Key == ConsoleKey.X
-                    ))
+                    && readKey.Key == ConsoleKey.Z))
                 {
                     Console.WriteLine("Exit");
                     isExit = true;
