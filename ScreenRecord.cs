@@ -23,14 +23,6 @@ namespace ScreenRec2
         public string FinalName { get; set; } = "FinalVideo.mp4";
 
         private readonly Stopwatch watch = new Stopwatch();
-        
-
-        //public ScreenRecord()
-        //{
-        //    создать папку для скриншотов, если ее нет
-        //    Directory.CreateDirectory(TempPath);
-        //    Directory.CreateDirectory(OutputPath);
-        //}
                 
         private void DeleteFiles(string targetDirName, string exceptFileName = "")
         {
@@ -61,9 +53,9 @@ namespace ScreenRec2
         public void RecordVideo()
         {
             watch.Start();
-            using (Bitmap bitmap = new Bitmap(Bounds.Width, Bounds.Height))
+            using (var bitmap = new Bitmap(Bounds.Width, Bounds.Height))
             {
-                using (Graphics graphics = Graphics.FromImage(bitmap))
+                using (var graphics = Graphics.FromImage(bitmap))
                 {
                     graphics.CopyFromScreen(new Point(Bounds.Left, Bounds.Top), Point.Empty, Bounds.Size);
                     string name = $"{TempPath}//screenshot_{fileCount++}.png";
@@ -79,9 +71,9 @@ namespace ScreenRec2
             _ = NativeMethods.Record("record recsound", "", 0, 0);
         }
 
-        private void SaveVideo(int width, int height, int frameRate)
+        public void SaveVideo(int width, int height, int frameRate)
         {
-            using (VideoFileWriter videoFileWriter = new VideoFileWriter())
+            using (var videoFileWriter = new VideoFileWriter())
             {
                 videoFileWriter.Open($"{OutputPath}//{videoName}", width, height, frameRate, VideoCodec.MPEG4);
                 foreach (var imagePath in inputImagesSequence)
@@ -95,23 +87,23 @@ namespace ScreenRec2
             }
         }
 
-        private void SaveAudio()
+        public void SaveAudio()
         {
             NativeMethods.Record($"save recsound {OutputPath}//{audioName}", "", 0, 0);
             NativeMethods.Record("close recsound", "", 0, 0);
         }
 
-        private void CombineVideoAndAudio(string video, string audio)
+        public void CombineVideoAndAudio(string video, string audio)
         {
             string command = $"/c ffmpeg -i \"{video}\" -i \"{audio}\" -shortest {FinalName}";
-            ProcessStartInfo processStartInfo = new ProcessStartInfo 
+            var processStartInfo = new ProcessStartInfo 
             {
                 CreateNoWindow = false,
                 FileName = "cmd.exe",
                 WorkingDirectory = OutputPath,
                 Arguments = command 
             };
-            using (Process execProcess = Process.Start(processStartInfo))
+            using (var execProcess = Process.Start(processStartInfo))
             {
                 execProcess.WaitForExit();
             }

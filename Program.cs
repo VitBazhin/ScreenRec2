@@ -7,6 +7,8 @@ using System.IO;
 
 namespace ScreenRec2
 {
+    //Добавить уникальное конечное имя, чтобы не было перезаписи файла в случае повторного запуска программы
+
     public class Program
     {
         public static void Main(string[] args)
@@ -86,8 +88,8 @@ namespace ScreenRec2
 
             timer.Elapsed += (sender, e) => 
             {
-                screenRecord.RecordVideo();
                 screenRecord.RecordAudio();
+                screenRecord.RecordVideo();
             };
             
 
@@ -122,8 +124,8 @@ namespace ScreenRec2
             } while (!isExit);
 
             Console.WriteLine("End. Press Enter");
-            //Console.ReadLine();
-        
+            Console.ReadLine();
+
         }
     }
 }
