@@ -9,36 +9,28 @@ using Accord.Video.FFMPEG;
 
 namespace ScreenRec2
 {
-    internal class ScreenRecord
+    public class ScreenRecord:IScreenRecord
     {
-        private Rectangle bounds;
-        private string outPath;
-        private string tempPath;
+        public Rectangle Bounds { get; set; }
+        public string OutputPath { get; set; }
+        public string TempPath { get; set; }
+        
         private int fileCount = 1;
         private List<string> inputImagesSequence = new List<string>() { };
 
         private readonly string audioName = "mic.wav";
         private readonly string videoName = "video.mp4";
-        private readonly string finalName = "FinalVideo.mp4";
+        public string FinalName { get; set; } = "FinalVideo.mp4";
 
         private readonly Stopwatch watch = new Stopwatch();
         
-        public static class NativeMethods
-        {
-            [DllImport("winmm.dll", EntryPoint = "mciSendStringA", CharSet = CharSet.Ansi, SetLastError = true, ExactSpelling = true)]
-            public static extern int Record(string lpstrCommand, string lpstrReturnString, int uReturnLength, int hwndCallback);
-        }
 
-        internal ScreenRecord(Rectangle bounds, string outPath, string tempPath, string finalName)
-        {
-            Directory.CreateDirectory(tempPath);
-            Directory.CreateDirectory(outPath);
-
-            this.bounds = bounds;
-            this.outPath = outPath;
-            this.finalName = finalName;
-            this.tempPath = tempPath;
-        }
+        //public ScreenRecord()
+        //{
+        //    создать папку для скриншотов, если ее нет
+        //    Directory.CreateDirectory(TempPath);
+        //    Directory.CreateDirectory(OutputPath);
+        //}
                 
         private void DeleteFiles(string targetDirName, string exceptFileName = "")
         {
@@ -69,12 +61,12 @@ namespace ScreenRec2
         public void RecordVideo()
         {
             watch.Start();
-            using (Bitmap bitmap = new Bitmap(bounds.Width, bounds.Height))
+            using (Bitmap bitmap = new Bitmap(Bounds.Width, Bounds.Height))
             {
                 using (Graphics graphics = Graphics.FromImage(bitmap))
                 {
-                    graphics.CopyFromScreen(new Point(bounds.Left, bounds.Top), Point.Empty, bounds.Size);
-                    string name = $"{tempPath}//screenshot_{fileCount++}.png";
+                    graphics.CopyFromScreen(new Point(Bounds.Left, Bounds.Top), Point.Empty, Bounds.Size);
+                    string name = $"{TempPath}//screenshot_{fileCount++}.png";
                     bitmap.Save(name, ImageFormat.Png);
                     inputImagesSequence.Add(name);
                 }
@@ -91,7 +83,7 @@ namespace ScreenRec2
         {
             using (VideoFileWriter videoFileWriter = new VideoFileWriter())
             {
-                videoFileWriter.Open($"{outPath}//{videoName}", width, height, frameRate, VideoCodec.MPEG4);
+                videoFileWriter.Open($"{OutputPath}//{videoName}", width, height, frameRate, VideoCodec.MPEG4);
                 foreach (var imagePath in inputImagesSequence)
                 {
                     using (Bitmap bitmap = Image.FromFile(imagePath) as Bitmap)
@@ -105,18 +97,18 @@ namespace ScreenRec2
 
         private void SaveAudio()
         {
-            NativeMethods.Record($"save recsound {outPath}//{audioName}", "", 0, 0);
+            NativeMethods.Record($"save recsound {OutputPath}//{audioName}", "", 0, 0);
             NativeMethods.Record("close recsound", "", 0, 0);
         }
 
         private void CombineVideoAndAudio(string video, string audio)
         {
-            string command = $"/c ffmpeg -i \"{video}\" -i \"{audio}\" -shortest {finalName}";
+            string command = $"/c ffmpeg -i \"{video}\" -i \"{audio}\" -shortest {FinalName}";
             ProcessStartInfo processStartInfo = new ProcessStartInfo 
             {
                 CreateNoWindow = false,
                 FileName = "cmd.exe",
-                WorkingDirectory = outPath,
+                WorkingDirectory = OutputPath,
                 Arguments = command 
             };
             using (Process execProcess = Process.Start(processStartInfo))
@@ -128,8 +120,8 @@ namespace ScreenRec2
         public void Stop()
         {
             watch.Stop();
-            int width = bounds.Width;
-            int height = bounds.Height;
+            int width = Bounds.Width;
+            int height = Bounds.Height;
             int frameRate = 10;
 
             Thread.Sleep(1000);
@@ -140,9 +132,15 @@ namespace ScreenRec2
 
             CombineVideoAndAudio(videoName, audioName);
 
-            DeleteFiles(tempPath);
+            DeleteFiles(TempPath);
             //DeleteFiles(outPath, $"{outPath}//{finalName}");
         }
 
+    }
+
+    public static class NativeMethods
+    {
+        [DllImport("winmm.dll", EntryPoint = "mciSendStringA", CharSet = CharSet.Ansi, SetLastError = true, ExactSpelling = true)]
+        public static extern int Record(string lpstrCommand, string lpstrReturnString, int uReturnLength, int hwndCallback);
     }
 }

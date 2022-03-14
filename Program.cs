@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Management;
 using System.Timers;
 using System.Configuration;
+using System.IO;
 
 namespace ScreenRec2
 {
@@ -24,7 +25,7 @@ namespace ScreenRec2
                         Console.WriteLine($"Not Found {key}");
                         return false;
                     }
-                    Console.WriteLine($"{key}= {result}");
+                    Console.WriteLine($"{key} = {result}");
                     return true;
                 }
                 catch (ConfigurationErrorsException ex)
@@ -50,9 +51,21 @@ namespace ScreenRec2
                 return;
             }
 
+            Directory.CreateDirectory(tempPath);
+            Directory.CreateDirectory(outputPath);
+
             var searcher = new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM Win32_VideoController");
             int width = 1920;
             int height = 1080;
+
+            var screenRecord = new ScreenRecord()
+            {
+                Bounds=new Rectangle(0, 0, width, height),
+                OutputPath = outputPath,
+                TempPath = tempPath,
+                FinalName = finalName
+            };
+
 
             foreach (ManagementObject queryObj in searcher.Get())
             {
@@ -64,17 +77,9 @@ namespace ScreenRec2
                     break;
                 }
             }
-            #region 2Method
-            //foreach (var screen in System.Windows.Forms.Screen.AllScreens)
-            //{
-            //    Console.WriteLine(screen.Bounds.Width);
-            //    Console.WriteLine(screen.Bounds.Height);
-            //}
-            #endregion
 
-            ScreenRecord screenRecord = new ScreenRecord(new Rectangle(0, 0, width, height), outputPath, tempPath, finalName);
 
-            Timer timer = new Timer
+            var timer = new Timer
             {
                 Interval = timerInterval
             };
@@ -84,7 +89,7 @@ namespace ScreenRec2
                 screenRecord.RecordVideo();
                 screenRecord.RecordAudio();
             };
-            //timer.Elapsed += Timer_Elapsed;
+            
 
             bool isExit = false;
             do
@@ -116,15 +121,9 @@ namespace ScreenRec2
                 }
             } while (!isExit);
 
-            Console.WriteLine("End. Pess Enter");
-            Console.ReadLine();
+            Console.WriteLine("End. Press Enter");
+            //Console.ReadLine();
+        
         }
-
-        //private static void Timer_Elapsed(object sender, ElapsedEventArgs e)
-        //{
-        //    ((ScreenRecord)sender).RecordVideo();
-        //    ((ScreenRecord)sender).RecordAudio();
-        //}
-
     }
 }
