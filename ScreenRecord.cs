@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -18,8 +19,9 @@ namespace ScreenRec2
         private int fileCount = 1;
         private List<string> inputImagesSequence = new List<string>() { };
 
+
         private readonly string audioName = "mic.wav";
-        private readonly string videoName = "video.mp4";
+        private readonly string videoName = $"video_{CreateGuid()}.mp4";
         public string FinalName { get; set; } = "FinalVideo.mp4";
 
         private readonly Stopwatch watch = new Stopwatch();
@@ -128,6 +130,20 @@ namespace ScreenRec2
             //DeleteFiles(outPath, $"{outPath}//{finalName}");
         }
 
+
+        /// <summary>
+        /// Creates a unique Guid of 5 characters
+        /// </summary>
+        /// <returns></returns>
+        public static string CreateGuid()
+        {
+            Guid guid = Guid.Empty;
+            while (Guid.Empty == guid)
+            {
+                guid = Guid.NewGuid();
+            }
+            return Convert.ToBase64String(guid.ToByteArray()).Substring(0, 5);
+        }
     }
 
     public static class NativeMethods
