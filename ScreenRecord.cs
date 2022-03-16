@@ -19,19 +19,18 @@ namespace ScreenRec2
         private int fileCount = 1;
         private List<string> inputImagesSequence = new List<string>() { };
 
-
         private readonly string audioName = "mic.wav";
         private readonly string videoName = $"video_{CreateGuid()}.mp4";
         public string FinalName { get; set; } = "FinalVideo.mp4";
 
         private readonly Stopwatch watch = new Stopwatch();
                 
-        private void DeleteFiles(string targetDirName, string exceptFileName = "")
+        public void DeleteFiles(string targetDirName/*, string exceptFileName = ""*/)
         {
-            bool notExistsException = string.IsNullOrEmpty(exceptFileName);
+            //bool notExistsException = true | string.IsNullOrEmpty(exceptFileName);
             foreach (var fileName in Directory.GetFiles(targetDirName))
             {
-                if (notExistsException || exceptFileName != fileName)
+                if (fileName != null)
                 {
                     File.SetAttributes(fileName, FileAttributes.Normal);
                     File.Delete(fileName);
@@ -41,7 +40,7 @@ namespace ScreenRec2
             {
                 DeleteFiles(dir);
             }
-            if (notExistsException)
+            if (string.IsNullOrEmpty(""))
             {
                 Directory.Delete(targetDirName, false);
             }
@@ -120,7 +119,7 @@ namespace ScreenRec2
 
             Thread.Sleep(1000);
             SaveAudio();
-            
+
             Thread.Sleep(1000);
             SaveVideo(width, height, frameRate);
 

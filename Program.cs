@@ -7,8 +7,8 @@ using System.IO;
 
 namespace ScreenRec2
 {
-    //Добавить уникальное конечное имя, чтобы не было перезаписи файла в случае повторного запуска программы
-    //Приостановить видео
+    //Ideas: Приостановка видео
+        
 
     public class Program
     {
@@ -92,41 +92,29 @@ namespace ScreenRec2
                 screenRecord.RecordAudio();
                 screenRecord.RecordVideo();
             };
-            
 
             bool isExit = false;
             do
             {
                 var readKey = Console.ReadKey();
-                if ((readKey.Modifiers == ConsoleModifiers.Control
-                    && readKey.Key == ConsoleKey.Z)
-                    || 
-                    (
-                    (readKey.Modifiers & ConsoleModifiers.Control) != 0
-                    && (readKey.Modifiers & ConsoleModifiers.Shift) != 0
-                    && readKey.Key == ConsoleKey.Z))
-                {
-                    Console.WriteLine("Exit");
-                    isExit = true;
-                }
-                else if (readKey.Modifiers == ConsoleModifiers.Control
+                if (readKey.Modifiers == ConsoleModifiers.Control
                     && readKey.Key == ConsoleKey.R)
                 {
-                    Console.WriteLine("Start rec");
+                    Console.WriteLine("Start record");
                     timer.Start();
                 }
                 else if (readKey.Modifiers == ConsoleModifiers.Control
                     && readKey.Key == ConsoleKey.W)
                 {
-                    Console.WriteLine("Stop rec");
+                    Console.WriteLine("Stop record");
                     timer.Stop();
                     screenRecord.Stop();
+                    isExit = true;
                 }
             } while (!isExit);
 
-            Console.WriteLine("End. Press Enter");
+            Console.WriteLine("The video was saved successfully. Press 'Enter'");
             Console.ReadLine();
-
         }
     }
 }
