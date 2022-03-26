@@ -8,7 +8,6 @@ using System.IO;
 namespace ScreenRec2
 {
     //Ideas: Приостановка видео
-        
 
     public class Program
     {
@@ -40,12 +39,10 @@ namespace ScreenRec2
             string outputPath;
             string tempPath;
             string timerIntervalSetting;
-            string finalName;
 
             if (!(TryGetSetting(nameof(outputPath), out outputPath)
                 && TryGetSetting(nameof(timerIntervalSetting), out timerIntervalSetting)
                 && int.TryParse(timerIntervalSetting, out int timerInterval)
-                && TryGetSetting(nameof(finalName), out finalName)
                 && TryGetSetting(nameof(tempPath), out tempPath)
                 ))
             {
@@ -61,13 +58,17 @@ namespace ScreenRec2
             int width = 1920;
             int height = 1080;
 
-            var screenRecord = new ScreenRecord()
+
+            var video = new Video()
             {
-                Bounds=new Rectangle(0, 0, width, height),
+                Bounds = new Rectangle(0, 0, width, height),
                 OutputPath = outputPath,
-                TempPath = tempPath,
-                FinalName = finalName
+                TempPath = tempPath
             };
+            var audio = new Audio();
+            //{
+            //    AudioPath=audioPath
+            //};
 
 
             foreach (ManagementObject queryObj in searcher.Get())
@@ -87,10 +88,10 @@ namespace ScreenRec2
                 Interval = timerInterval
             };
 
-            timer.Elapsed += (sender, e) => 
+            timer.Elapsed += (sender, e) =>
             {
-                screenRecord.RecordAudio();
-                screenRecord.RecordVideo();
+                video.RecordVideo();
+                audio.RecordAudio();
             };
 
             bool isExit = false;
@@ -108,12 +109,14 @@ namespace ScreenRec2
                 {
                     Console.WriteLine("Stop record");
                     timer.Stop();
-                    screenRecord.Stop();
+                    video.StopRecordVideo();
+                    audio.StopRecordAudio();
+
                     isExit = true;
                 }
             } while (!isExit);
 
-            Console.WriteLine("The video was saved successfully. Press 'Enter'");
+            Console.WriteLine("The video and the audio was saved successfully. Press 'Enter'");
             Console.ReadLine();
         }
     }
