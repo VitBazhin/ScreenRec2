@@ -1,5 +1,4 @@
 ﻿using Accord.Video.FFMPEG;
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -9,27 +8,34 @@ using System.Threading;
 
 namespace ScreenRec2
 {
-    class Video
+    class Video: IVideo
     {
-        private readonly Stopwatch watch = new Stopwatch();
+        private readonly Stopwatch _watch = new Stopwatch();
 
-        public Rectangle Bounds { get; /*private*/ set; }
-        public string OutputPath { get; /*private*/ set; }
-        public string TempPath { get; /*private*/ set; }
+        public Video(Rectangle bounds,string ouputPath,string tempPath)
+        {
+            _bounds = bounds;
+            _outputPath = ouputPath;
+            _tempPath= tempPath;
+        }
 
-        private int fileCount = 1;
+        private Rectangle _bounds;
+        private readonly string _outputPath;
+        private readonly string _tempPath; 
+
+        private int _fileCount = 1;
         private readonly List<string> inputImagesSequence = new List<string>() { };
-        private readonly string videoName = $"video_{CreateGuid()}.mp4";
+        private readonly string _videoName = "video.mp4";
 
         public void RecordVideo()
         {
-            watch.Start();
-            using (var bitmap = new Bitmap(Bounds.Width, Bounds.Height))
+            _watch.Start();
+            using (var bitmap = new Bitmap(_bounds.Width, _bounds.Height))
             {
                 using (var graphics = Graphics.FromImage(bitmap))
                 {
-                    graphics.CopyFromScreen(new Point(Bounds.Left, Bounds.Top), Point.Empty, Bounds.Size);
-                    string name = $"{TempPath}//screenshot_{fileCount++}.png";
+                    graphics.CopyFromScreen(new Point(_bounds.Left, _bounds.Top), Point.Empty, _bounds.Size);
+                    string name = $"{_tempPath}//screenshot_{_fileCount++}.png";
                     bitmap.Save(name, ImageFormat.Png);
                     inputImagesSequence.Add(name);
                 }
@@ -38,13 +44,13 @@ namespace ScreenRec2
 
         public void SaveVideo()
         {
-            int width = Bounds.Width;
-            int height = Bounds.Height;
+            int width = _bounds.Width;
+            int height = _bounds.Height;
             int frameRate = 10;
 
             using (var videoFileWriter = new VideoFileWriter())
             {
-                videoFileWriter.Open($"{OutputPath}//{videoName}", width, height, frameRate, VideoCodec.MPEG4);
+                videoFileWriter.Open($"{_outputPath}//{_videoName}", width, height, frameRate, VideoCodec.MPEG4);
                 foreach (var imagePath in inputImagesSequence)
                 {
                     using (Bitmap bitmap = Image.FromFile(imagePath) as Bitmap)
@@ -58,11 +64,11 @@ namespace ScreenRec2
 
         public void StopRecordVideo()
         {
-            watch.Stop();
+            _watch.Stop();
             Thread.Sleep(1000);
             SaveVideo();
             Thread.Sleep(1000);
-            DeleteFiles(TempPath);
+            DeleteFiles(_tempPath);
         }
 
         public void DeleteFiles(string targetDirName)
@@ -83,17 +89,6 @@ namespace ScreenRec2
             {
                 Directory.Delete(targetDirName, false);
             }
-        }
-
-        #region Comments
-        /// <summary>
-        /// Creates a unique Guid of 5 characters
-        /// </summary>
-        /// <returns></returns>
-        #endregion
-        public static string CreateGuid()
-        {
-            return Convert.ToBase64String(Guid.NewGuid().ToByteArray()).Substring(0, 5);
         }
     }
 }

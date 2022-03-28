@@ -2,7 +2,6 @@
 using System.Drawing;
 using System.Management;
 using System.Timers;
-using System.Configuration;
 using System.IO;
 
 namespace ScreenRec2
@@ -14,36 +13,17 @@ namespace ScreenRec2
         public static void Main(string[] args)
         {
             Console.WriteLine("Start");
-            var appSettings = ConfigurationManager.AppSettings;
-
-            bool TryGetSetting(string key, out string result)
-            {
-                result = "";
-                try
-                {
-                    result = appSettings[key];
-                    if (string.IsNullOrEmpty(result))
-                    {
-                        Console.WriteLine($"Not Found {key}");
-                        return false;
-                    }
-                    Console.WriteLine($"{key} = {result}");
-                    return true;
-                }
-                catch (ConfigurationErrorsException ex)
-                {
-                    Console.WriteLine($"Error reading app settings {ex}");
-                    return false;
-                }
-            }
+            
             string outputPath;
             string tempPath;
             string timerIntervalSetting;
+            string audioPath;
 
-            if (!(TryGetSetting(nameof(outputPath), out outputPath)
-                && TryGetSetting(nameof(timerIntervalSetting), out timerIntervalSetting)
+            if (!(Background.TryGetSetting(nameof(outputPath), out outputPath)
+                && Background.TryGetSetting(nameof(timerIntervalSetting), out timerIntervalSetting)
                 && int.TryParse(timerIntervalSetting, out int timerInterval)
-                && TryGetSetting(nameof(tempPath), out tempPath)
+                && Background.TryGetSetting(nameof(tempPath), out tempPath)
+                && Background.TryGetSetting(nameof(audioPath), out audioPath)
                 ))
             {
                 Console.WriteLine("GetSettingError. Press Enter for exit and fix app.config");
@@ -53,30 +33,20 @@ namespace ScreenRec2
 
             Directory.CreateDirectory(tempPath);
             Directory.CreateDirectory(outputPath);
+            Directory.CreateDirectory(audioPath);
 
             var searcher = new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM Win32_VideoController");
-            int width = 1920;
-            int height = 1080;
-
-
-            var video = new Video()
-            {
-                Bounds = new Rectangle(0, 0, width, height),
-                OutputPath = outputPath,
-                TempPath = tempPath
-            };
-            var audio = new Audio();
-            //{
-            //    AudioPath=audioPath
-            //};
+            
+            var video = new Video(new Rectangle(0, 0, 1920, 1080), outputPath, tempPath);
+            var audio = new Audio(audioPath);
 
 
             foreach (ManagementObject queryObj in searcher.Get())
             {
                 if (queryObj["CurrentHorizontalResolution"] != null)
                 {
-                    width = int.Parse(queryObj["CurrentHorizontalResolution"].ToString());
-                    height = int.Parse(queryObj["CurrentVerticalResolution"].ToString());
+                    int width = int.Parse(queryObj["CurrentHorizontalResolution"].ToString());
+                    int height = int.Parse(queryObj["CurrentVerticalResolution"].ToString());
                     Console.WriteLine($"{width}x{height}");
                     break;
                 }
@@ -111,6 +81,9 @@ namespace ScreenRec2
                     timer.Stop();
                     video.StopRecordVideo();
                     audio.StopRecordAudio();
+
+                    //var m = new MergeAudioAndVideo();
+                    //m.Mergefile();
 
                     isExit = true;
                 }

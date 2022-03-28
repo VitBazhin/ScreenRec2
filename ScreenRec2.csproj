@@ -49,7 +49,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Audio.cs" />
-    <Compile Include="IScreenRecord.cs" />
+    <Compile Include="Background.cs" />
+    <Compile Include="IAudio.cs" />
+    <Compile Include="IVideo.cs" />
+    <Compile Include="MergeAudioAndVideo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Video.cs" />
