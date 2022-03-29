@@ -2,18 +2,16 @@
 
 namespace ScreenRec2
 {
-    //Аудио останавливается позже остановки записи
-
     class Audio: IAudio
     {
         private WaveFileWriter _waveFile;
         private WaveInEvent _waveSource;
 
         private readonly string _audioPath;
-        private readonly string audioName = "audio.wav";
-        public Audio(string path)
+        private readonly string _audioName = "audio.wav";
+        public Audio(string audioPath)
         {
-            _audioPath = path;
+            _audioPath = audioPath;
         }
 
         public void RecordAudio()
@@ -30,7 +28,7 @@ namespace ScreenRec2
                 _waveFile.Write(e.Buffer, 0, e.BytesRecorded);
             };
 
-            _waveFile = new WaveFileWriter($"{_audioPath}//{audioName}", _waveSource.WaveFormat);
+            _waveFile = new WaveFileWriter($"{_audioPath}//{_audioName}", _waveSource.WaveFormat);
             _waveSource.StartRecording();
         }
         public void StopRecordAudio()

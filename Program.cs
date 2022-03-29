@@ -7,35 +7,37 @@ using System.IO;
 namespace ScreenRec2
 {
     //Ideas: Приостановка видео
+    //Ideas: save or non-save?
 
     //fix: останавливать аудио до начала обработки скриншотов видео
     //fix: подобрать нужное время кадров
-
+    //fix: удалить FFMpegSharp
+    //fix: улучшить качество
+    //fix: удаление Temp файлов и ненужных библиотек
     public class Program
     {
         public static void Main(string[] args)
         {
-            Console.WriteLine("Start");
-            
+            Console.WriteLine("Info:");
+
             string outputPath;
-            string tempPath;
             string timerIntervalSetting;
-            string audioPath;
+            string videoPath = "C://Temp//Video";
+            string tempPath = "C://Temp//Screenshots";
+            string audioPath = "C://Temp//Audio";
 
             if (!(Background.TryGetSetting(nameof(outputPath), out outputPath)
                 && Background.TryGetSetting(nameof(timerIntervalSetting), out timerIntervalSetting)
                 && int.TryParse(timerIntervalSetting, out int timerInterval)
-                && Background.TryGetSetting(nameof(tempPath), out tempPath)
-                && Background.TryGetSetting(nameof(audioPath), out audioPath)
                 ))
             {
-                Console.WriteLine("GetSettingError. Press Enter for exit and fix app.config");
+                Console.WriteLine("GetSettingError. Press 'Enter' for exit and fix app.config");
                 Console.ReadLine();
                 return;
             }
 
             Directory.CreateDirectory(tempPath);
-            Directory.CreateDirectory(outputPath);
+            Directory.CreateDirectory(videoPath);
             Directory.CreateDirectory(audioPath);
 
             var searcher = new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM Win32_VideoController");
@@ -54,7 +56,7 @@ namespace ScreenRec2
                 }
             }
 
-            var video = new Video(new Rectangle(0, 0, width, height), outputPath, tempPath);
+            var video = new Video(new Rectangle(0, 0, width, height), videoPath, tempPath);
             var audio = new Audio(audioPath);
 
 
@@ -76,6 +78,7 @@ namespace ScreenRec2
                 if (readKey.Modifiers == ConsoleModifiers.Control
                     && readKey.Key == ConsoleKey.R)
                 {
+                    //Console.Clear();
                     Console.WriteLine("Start record");
                     timer.Start();
                 }
@@ -84,11 +87,14 @@ namespace ScreenRec2
                 {
                     Console.WriteLine("Stop record");
                     timer.Stop();
+
                     video.StopRecordVideo();
                     audio.StopRecordAudio();
 
+                    Background.DeleteFiles(tempPath);
+
                     var m = new MergeAudioAndVideo();
-                    m.Mergefile(audioPath, outputPath);
+                    m.Mergefile(audioPath, videoPath, outputPath);
 
                     isExit = true;
                 }

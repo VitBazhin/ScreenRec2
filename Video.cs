@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.IO;
 using System.Threading;
 
 namespace ScreenRec2
@@ -12,10 +11,10 @@ namespace ScreenRec2
     {
         private readonly Stopwatch _watch = new Stopwatch();
 
-        public Video(Rectangle bounds,string ouputPath,string tempPath)
+        public Video(Rectangle bounds,string videoPath,string tempPath)
         {
             _bounds = bounds;
-            _outputPath = ouputPath;
+            _outputPath = videoPath;
             _tempPath= tempPath;
         }
 
@@ -46,7 +45,7 @@ namespace ScreenRec2
         {
             int width = _bounds.Width;
             int height = _bounds.Height;
-            int frameRate = 27;
+            int frameRate = 30;
 
             using (var videoFileWriter = new VideoFileWriter())
             {
@@ -67,28 +66,6 @@ namespace ScreenRec2
             _watch.Stop();
             Thread.Sleep(1000);
             SaveVideo();
-            Thread.Sleep(1000);
-            DeleteFiles(_tempPath);
-        }
-
-        public void DeleteFiles(string targetDirName)
-        {
-            foreach (var fileName in Directory.GetFiles(targetDirName))
-            {
-                if (fileName != null)
-                {
-                    File.SetAttributes(fileName, FileAttributes.Normal);
-                    File.Delete(fileName);
-                }
-            }
-            foreach (var dir in Directory.GetDirectories(targetDirName))
-            {
-                DeleteFiles(dir);
-            }
-            if (string.IsNullOrEmpty(""))
-            {
-                Directory.Delete(targetDirName, false);
-            }
         }
     }
 }

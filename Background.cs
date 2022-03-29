@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Configuration;
+using System.IO;
 
 namespace ScreenRec2
 {
@@ -32,13 +33,34 @@ namespace ScreenRec2
             }
         }
 
+        public static void DeleteFiles(string targetDirName)
+        {
+            foreach (var fileName in Directory.GetFiles(targetDirName))
+            {
+                if (fileName != null)
+                {
+                    File.SetAttributes(fileName, FileAttributes.Normal);
+                    File.Delete(fileName);
+                }
+            }
+            foreach (var dir in Directory.GetDirectories(targetDirName))
+            {
+                DeleteFiles(dir);
+            }
+            if (string.IsNullOrEmpty(""))
+            {
+                Directory.Delete(targetDirName, false);
+            }
+        }
+
         /// <summary>
-        /// Creates a unique Guid of 5 characters.
+        /// Create a unique video name.
         /// </summary>
         /// <returns></returns>
-        public static string CreateGuid()
+        public static string UniqName()
         {
-            return Convert.ToBase64String(Guid.NewGuid().ToByteArray()).Substring(0, 5);
+            var dateTime = DateTime.Now;
+            return dateTime.Year.ToString()+dateTime.Month+dateTime.Day+"_"+dateTime.Hour+dateTime.Minute+dateTime.Second;
         }
     }
 }
