@@ -8,6 +8,9 @@ namespace ScreenRec2
 {
     //Ideas: Приостановка видео
 
+    //fix: останавливать аудио до начала обработки скриншотов видео
+    //fix: подобрать нужное время кадров
+
     public class Program
     {
         public static void Main(string[] args)
@@ -85,7 +88,7 @@ namespace ScreenRec2
                     audio.StopRecordAudio();
 
                     var m = new MergeAudioAndVideo();
-                    m.Mergefile(audioPath,tempPath);
+                    m.Mergefile(audioPath, outputPath);
 
                     isExit = true;
                 }

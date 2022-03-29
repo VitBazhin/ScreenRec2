@@ -46,7 +46,7 @@ namespace ScreenRec2
         {
             int width = _bounds.Width;
             int height = _bounds.Height;
-            int frameRate = 10;
+            int frameRate = 27;
 
             using (var videoFileWriter = new VideoFileWriter())
             {
