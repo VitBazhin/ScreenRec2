@@ -1,11 +1,14 @@
 ﻿using System.Diagnostics;
 using System.Threading;
+using System.IO;
+
+using FFMpegSharp.FFMPEG;
 
 namespace ScreenRec2
 {
     internal class MergeAudioAndVideo
     {
-        public void Mergefile(string audioPath, string videoPath)
+        public void Mergefile(string audioPath, string videoPath/*=tempPath*/)
         {
             #region firstEdition
             //string args = "/c ffmpeg -i \"video.mp4\" -i \"mic.wav\" -shortest outPutFile.mp4";
@@ -41,6 +44,21 @@ namespace ScreenRec2
             //    exeProcess.Close();
             //}
             #endregion
+
+            string inputImageFile = $@"{videoPath}\video.mp4";
+            string outputAudioFile = $@"{audioPath}\audio.wav";
+            string outputVideoFile = @"C:\Temp\FinalVideo.mp4";
+
+
+
+
+            FFMpeg encoder = new FFMpeg();
+            
+            new FFMpeg().PosterWithAudio(
+                new FileInfo(inputImageFile),
+                new FileInfo(outputAudioFile),
+                new FileInfo(outputVideoFile));
+
         }
     }
 }

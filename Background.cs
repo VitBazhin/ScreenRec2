@@ -5,7 +5,12 @@ namespace ScreenRec2
 {
     public static class Background
     {
-        //add coments
+        /// <summary>
+        /// Return config data.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="result"></param>
+        /// <returns></returns>
         public static bool TryGetSetting(string key, out string result)
         {
             result = "";
@@ -28,7 +33,7 @@ namespace ScreenRec2
         }
 
         /// <summary>
-        /// Creates a unique Guid of 5 characters
+        /// Creates a unique Guid of 5 characters.
         /// </summary>
         /// <returns></returns>
         public static string CreateGuid()

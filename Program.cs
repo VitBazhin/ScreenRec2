@@ -36,21 +36,23 @@ namespace ScreenRec2
             Directory.CreateDirectory(audioPath);
 
             var searcher = new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM Win32_VideoController");
+
+            int width=0;
+            int height=0;
             
-            var video = new Video(new Rectangle(0, 0, 1920, 1080), outputPath, tempPath);
-            var audio = new Audio(audioPath);
-
-
             foreach (ManagementObject queryObj in searcher.Get())
             {
                 if (queryObj["CurrentHorizontalResolution"] != null)
                 {
-                    int width = int.Parse(queryObj["CurrentHorizontalResolution"].ToString());
-                    int height = int.Parse(queryObj["CurrentVerticalResolution"].ToString());
+                    width = int.Parse(queryObj["CurrentHorizontalResolution"].ToString());
+                    height = int.Parse(queryObj["CurrentVerticalResolution"].ToString());
                     Console.WriteLine($"{width}x{height}");
                     break;
                 }
             }
+
+            var video = new Video(new Rectangle(0, 0, width, height), outputPath, tempPath);
+            var audio = new Audio(audioPath);
 
 
             var timer = new Timer
@@ -82,8 +84,8 @@ namespace ScreenRec2
                     video.StopRecordVideo();
                     audio.StopRecordAudio();
 
-                    //var m = new MergeAudioAndVideo();
-                    //m.Mergefile();
+                    var m = new MergeAudioAndVideo();
+                    m.Mergefile(audioPath,tempPath);
 
                     isExit = true;
                 }
