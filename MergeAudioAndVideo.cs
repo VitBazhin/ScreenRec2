@@ -2,10 +2,10 @@
 
 namespace ScreenRec2
 {
-    internal class MergeAudioAndVideo
+    internal static class MergeAudioAndVideo
     {
-        private readonly string _finalName=$"Screenrecording_{Background.UniqName()}.mp4";
-        public void Mergefile(string audioPath, string videoPath,string outputPath)
+        private static readonly string _finalName=$"Screenrecording_{Background.UniqName()}.mp4";
+        public static void Mergefile(string /*audioVideoPath*/ audioPath, string videoPath, string outputPath)
         {
             var startInfo = new ProcessStartInfo()
             {
@@ -15,7 +15,7 @@ namespace ScreenRec2
                 UseShellExecute = false,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
-                Arguments = string.Format(" -i {0} -i {1} -shortest {2} -y", $"{videoPath}//video.mp4", $@"{audioPath}//audio.wav", $"{outputPath}//{_finalName}")
+                Arguments = string.Format(" -i {0} -i {1} -shortest {2} -y", $"{videoPath }//video.mp4", $@"{audioPath }//audio.wav", $"{outputPath}//{_finalName}")
             };
 
             using (var exeProcess = Process.Start(startInfo))

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Configuration;
 using System.IO;
+using System.Threading;
 
 namespace ScreenRec2
 {
@@ -33,24 +34,32 @@ namespace ScreenRec2
             }
         }
 
+        /// <summary>
+        /// Delete tempary directories.
+        /// </summary>
+        /// <param name="targetDirName"></param>
         public static void DeleteFiles(string targetDirName)
         {
-            foreach (var fileName in Directory.GetFiles(targetDirName))
-            {
-                if (fileName != null)
-                {
-                    File.SetAttributes(fileName, FileAttributes.Normal);
-                    File.Delete(fileName);
-                }
-            }
-            foreach (var dir in Directory.GetDirectories(targetDirName))
-            {
-                DeleteFiles(dir);
-            }
-            if (string.IsNullOrEmpty(""))
-            {
-                Directory.Delete(targetDirName, false);
-            }
+            Directory.Delete(targetDirName, true);
+
+            #region oldMethod
+            //foreach (var fileName in Directory.GetFiles(targetDirName))
+            //{
+            //    if (fileName != null)
+            //    {
+            //        File.SetAttributes(fileName, FileAttributes.Normal);
+            //        File.Delete(fileName);
+            //    }
+            //}
+            //foreach (var dir in Directory.GetDirectories(targetDirName))
+            //{
+            //    DeleteFiles(dir);
+            //}
+            //if (string.IsNullOrEmpty(""))
+            //{
+            //    Directory.Delete(targetDirName, false);
+            //}
+            #endregion
         }
 
         /// <summary>
