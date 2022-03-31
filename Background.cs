@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Configuration;
 using System.IO;
+using System.Text;
 using System.Threading;
 
 namespace ScreenRec2
@@ -68,8 +69,7 @@ namespace ScreenRec2
         /// <returns></returns>
         public static string UniqName()
         {
-            var dateTime = DateTime.Now;
-            return dateTime.Year.ToString()+dateTime.Month+dateTime.Day+"_"+dateTime.Hour+dateTime.Minute+dateTime.Second;
+            return DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss");
         }
     }
 }
