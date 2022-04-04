@@ -25,11 +25,11 @@ namespace ScreenRec2
             string tempPath;
             string audioPath;
 
-            if (!(Background.TryGetSetting(nameof(outputPath), out outputPath)
-                && Background.TryGetSetting(nameof(audioPath),out audioPath)
-                && Background.TryGetSetting(nameof(videoPath),out videoPath)
-                && Background.TryGetSetting(nameof(tempPath), out tempPath)
-                && Background.TryGetSetting(nameof(timerIntervalSetting), out timerIntervalSetting)
+            if (!(OF.TryGetSetting(nameof(outputPath), out outputPath)
+                && OF.TryGetSetting(nameof(audioPath),out audioPath)
+                && OF.TryGetSetting(nameof(videoPath),out videoPath)
+                && OF.TryGetSetting(nameof(tempPath), out tempPath)
+                && OF.TryGetSetting(nameof(timerIntervalSetting), out timerIntervalSetting)
                 && int.TryParse(timerIntervalSetting, out int timerInterval)
                 ))
             {
@@ -88,7 +88,7 @@ namespace ScreenRec2
                     video.StopRecordVideo();
                     audio.StopRecordAudio();
 
-                    Background.DeleteFiles(tempPath);
+                    OF.DeleteFiles(tempPath);
                     MergeAudioAndVideo.Mergefile(audioPath, videoPath, outputPath);
                     
                     isExit = true;

@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Configuration;
 using System.IO;
-using System.Text;
-using System.Threading;
 
 namespace ScreenRec2
 {
-    public static class Background
+    public static class OF
     {
         /// <summary>
         /// Return config data.
@@ -42,32 +40,13 @@ namespace ScreenRec2
         public static void DeleteFiles(string targetDirName)
         {
             Directory.Delete(targetDirName, true);
-
-            #region oldMethod
-            //foreach (var fileName in Directory.GetFiles(targetDirName))
-            //{
-            //    if (fileName != null)
-            //    {
-            //        File.SetAttributes(fileName, FileAttributes.Normal);
-            //        File.Delete(fileName);
-            //    }
-            //}
-            //foreach (var dir in Directory.GetDirectories(targetDirName))
-            //{
-            //    DeleteFiles(dir);
-            //}
-            //if (string.IsNullOrEmpty(""))
-            //{
-            //    Directory.Delete(targetDirName, false);
-            //}
-            #endregion
         }
 
         /// <summary>
         /// Create a unique video name.
         /// </summary>
         /// <returns></returns>
-        public static string UniqName()
+        public static string UniqueName()
         {
             return DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss");
         }
