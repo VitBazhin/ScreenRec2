@@ -58,6 +58,7 @@ namespace ScreenRec2
                     }
                 }
                 videoFileWriter.Close();
+                videoFileWriter.Dispose();
             }
         }
 

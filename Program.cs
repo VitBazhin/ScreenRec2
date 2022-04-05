@@ -1,18 +1,16 @@
 ﻿using System;
 using System.Drawing;
-using System.Management;
-using System.Timers;
 using System.IO;
+using System.Management;
 
 namespace ScreenRec2
 {
     //Ideas: Приостановка видео
     //Ideas: save or non-save?
 
-    //fix: останавливать аудио до начала обработки скриншотов видео
     //fix: подобрать нужное время кадров
     //fix: улучшить качество
-    //fix: удаление Temp файлов и ненужных библиотек
+    //fix: метод соединения Mergefile работает некорректно
     public class Program
     {
         public static void Main(string[] args)
@@ -21,15 +19,13 @@ namespace ScreenRec2
 
             string outputPath;
             string timerIntervalSetting;
-            string videoPath;
+            string inputPath;
             string tempPath;
-            string audioPath;
 
-            if (!(OF.TryGetSetting(nameof(outputPath), out outputPath)
-                && OF.TryGetSetting(nameof(audioPath),out audioPath)
-                && OF.TryGetSetting(nameof(videoPath),out videoPath)
-                && OF.TryGetSetting(nameof(tempPath), out tempPath)
-                && OF.TryGetSetting(nameof(timerIntervalSetting), out timerIntervalSetting)
+            if (!(FileShell.TryGetSetting(nameof(outputPath), out outputPath)
+                && FileShell.TryGetSetting(nameof(inputPath),out inputPath)
+                && FileShell.TryGetSetting(nameof(tempPath), out tempPath)
+                && FileShell.TryGetSetting(nameof(timerIntervalSetting), out timerIntervalSetting)
                 && int.TryParse(timerIntervalSetting, out int timerInterval)
                 ))
             {
@@ -39,8 +35,7 @@ namespace ScreenRec2
             }
 
             Directory.CreateDirectory(tempPath);
-            Directory.CreateDirectory(videoPath);
-            Directory.CreateDirectory(audioPath);
+            Directory.CreateDirectory(inputPath);
 
             var searcher = new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM Win32_VideoController");
             int width=0;
@@ -57,9 +52,9 @@ namespace ScreenRec2
                 }
             }
 
-            var video = new Video(new Rectangle(0, 0, width, height), videoPath, tempPath);
-            var audio = new Audio(audioPath);
-            var timer = new Timer
+            var video = new Video(new Rectangle(0, 0, width, height), inputPath, tempPath);
+            var audio = new Audio(inputPath);
+            var timer = new System.Timers.Timer
             {
                 Interval = timerInterval
             };
@@ -67,7 +62,13 @@ namespace ScreenRec2
             timer.Elapsed += (sender, e) =>
             {
                 video.RecordVideo();
-                audio.RecordAudio();
+            };
+
+            timer.Disposed += (sender, e) =>
+            {
+                audio.StopRecordAudio();
+                video.StopRecordVideo();
+
             };
 
             bool isExit = false;
@@ -78,25 +79,23 @@ namespace ScreenRec2
                     && readKey.Key == ConsoleKey.R)
                 {
                     Console.WriteLine("Start record");
+                    audio.RecordAudio();
                     timer.Start();
+                    
                 }
                 else if (readKey.Modifiers == ConsoleModifiers.Control
                     && readKey.Key == ConsoleKey.W)
                 {
                     Console.WriteLine("Stop record");
-                    timer.Stop();
-                    video.StopRecordVideo();
-                    audio.StopRecordAudio();
+                    timer.Dispose();
 
-                    OF.DeleteFiles(tempPath);
-                    MergeAudioAndVideo.Mergefile(audioPath, videoPath, outputPath);
-                    
+                    MergeAudioAndVideo.Mergefile(inputPath, outputPath);
+
                     isExit = true;
                 }
             } while (!isExit);
 
-            //Background.DeleteFiles(videoPath);
-            //Background.DeleteFiles(audioPath);
+            FileShell.DeleteFiles(inputPath);
 
             Console.WriteLine("The video and the audio was saved successfully. Press 'Enter'");
             Console.ReadLine();

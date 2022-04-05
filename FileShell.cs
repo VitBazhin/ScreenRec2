@@ -4,7 +4,10 @@ using System.IO;
 
 namespace ScreenRec2
 {
-    public static class OF
+    /// <summary>
+    /// Exposes static method for performing basic 'Screen Record' tasks with files. This class cannot be inherited.
+    /// </summary>
+    public static class FileShell
     {
         /// <summary>
         /// Return config data.
@@ -48,7 +51,7 @@ namespace ScreenRec2
         /// <returns></returns>
         public static string UniqueName()
         {
-            return DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss");
+            return DateTime.Now.ToString("yyyyMMdd_HHmmss");
         }
     }
 }
