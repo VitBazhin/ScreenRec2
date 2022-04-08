@@ -10,7 +10,6 @@ namespace ScreenRec2
 
     //fix: подобрать нужное время кадров
     //fix: улучшить качество
-    //fix: метод соединения Mergefile работает некорректно
     public class Program
     {
         public static void Main(string[] args)
@@ -21,6 +20,10 @@ namespace ScreenRec2
             string timerIntervalSetting;
             string inputPath;
             string tempPath;
+
+            const string AUDIO_NAME = "audio.wav";
+            const string VIDEO_NAME = "video.mp4";
+                
 
             if (!(FileShell.TryGetSetting(nameof(outputPath), out outputPath)
                 && FileShell.TryGetSetting(nameof(inputPath),out inputPath)
@@ -52,8 +55,8 @@ namespace ScreenRec2
                 }
             }
 
-            var video = new Video(new Rectangle(0, 0, width, height), inputPath, tempPath);
-            var audio = new Audio(inputPath);
+            var video = new Video(new Rectangle(0, 0, width, height), inputPath, tempPath,VIDEO_NAME);
+            var audio = new Audio(inputPath,AUDIO_NAME);
             var timer = new System.Timers.Timer
             {
                 Interval = timerInterval
@@ -89,7 +92,7 @@ namespace ScreenRec2
                     Console.WriteLine("Stop record");
                     timer.Dispose();
 
-                    MergeAudioAndVideo.Mergefile(inputPath, outputPath);
+                    MergeAudioAndVideo.Mergefile(inputPath, outputPath,VIDEO_NAME,AUDIO_NAME);
 
                     isExit = true;
                 }

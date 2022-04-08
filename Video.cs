@@ -11,20 +11,21 @@ namespace ScreenRec2
     {
         private readonly Stopwatch _watch = new Stopwatch();
 
-        public Video(Rectangle bounds,string videoPath,string tempPath)
+        public Video(Rectangle bounds,string videoPath,string tempPath,string videoName)
         {
             _bounds = bounds;
             _outputPath = videoPath;
             _tempPath= tempPath;
+            _videoName = videoName;
         }
 
         private Rectangle _bounds;
         private readonly string _outputPath;
-        private readonly string _tempPath; 
+        private readonly string _tempPath;
+        private readonly string _videoName;
 
         private int _fileCount = 1;
         private readonly List<string> inputImagesSequence = new List<string>() { };
-        private readonly string _videoName = "video.mp4";
 
         public void RecordVideo()
         {

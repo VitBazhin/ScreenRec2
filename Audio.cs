@@ -2,16 +2,17 @@
 
 namespace ScreenRec2
 {
-    class Audio//: IAudio
+    class Audio: IAudio
     {
         [DllImport("winmm.dll", EntryPoint = "mciSendStringA", CharSet = CharSet.Ansi, SetLastError = true, ExactSpelling = true)]
         private static extern int mciSendString(string lpstrCommand, string lpstrReturnString, int uReturnLength, int hwndCallback);
 
         private readonly string _audioPath;
-        private readonly string _audioName = "audio.wav";
-        public Audio(string audioPath)
+        private readonly string _audioName;
+        public Audio(string audioPath, string audioName)
         {
             _audioPath = audioPath;
+            _audioName = audioName;
         }
         public void RecordAudio()
         {
