@@ -69,5 +69,10 @@ namespace ScreenRec2
             Thread.Sleep(1000);
             SaveVideo();
         }
+
+        public void StopRecordVideoWithDelete()
+        {
+            _watch.Stop();
+        }
     }
 }

@@ -8,8 +8,8 @@ namespace ScreenRec2
     //Ideas: Приостановка видео
     //Ideas: save or non-save?
 
-    //fix: подобрать нужное время кадров
     //fix: улучшить качество
+    //fix: crossplatforms
     public class Program
     {
         public static void Main(string[] args)
@@ -81,7 +81,7 @@ namespace ScreenRec2
                 if (readKey.Modifiers == ConsoleModifiers.Control
                     && readKey.Key == ConsoleKey.R)
                 {
-                    Console.WriteLine("Start record");
+                    Console.WriteLine("Start record.");
                     audio.RecordAudio();
                     timer.Start();
                     
@@ -89,18 +89,18 @@ namespace ScreenRec2
                 else if (readKey.Modifiers == ConsoleModifiers.Control
                     && readKey.Key == ConsoleKey.W)
                 {
-                    Console.WriteLine("Stop record");
+                    Console.WriteLine("Stop record.");
                     timer.Dispose();
 
-                    MergeAudioAndVideo.Mergefile(inputPath, outputPath,VIDEO_NAME,AUDIO_NAME);
+                    MergeAudioAndVideo.Mergefile(inputPath, outputPath, VIDEO_NAME, AUDIO_NAME);
 
                     isExit = true;
+                    Console.WriteLine("The video and the audio was saved successfully. Press 'Enter'.");
                 }
             } while (!isExit);
 
             FileShell.DeleteFiles(inputPath);
-
-            Console.WriteLine("The video and the audio was saved successfully. Press 'Enter'");
+            
             Console.ReadLine();
         }
     }
