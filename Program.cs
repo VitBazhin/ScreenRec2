@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.IO;
 using System.Management;
+using System.Threading;
 
 namespace ScreenRec2
 {
@@ -16,18 +17,18 @@ namespace ScreenRec2
         {
             Console.WriteLine("Info:");
 
-            string outputPath;
-            string timerIntervalSetting;
-            string inputPath;
-            string tempPath;
-
             const string AUDIO_NAME = "audio.wav";
             const string VIDEO_NAME = "video.mp4";
-                
 
+            string outputPath;
+            string timerIntervalSetting;
+            string inputPath = FileShell.CreateTempPath();
+            string tempPath = inputPath + "//Screenshots";
+            
+            Directory.CreateDirectory(tempPath);
+            Directory.CreateDirectory(inputPath);
+            
             if (!(FileShell.TryGetSetting(nameof(outputPath), out outputPath)
-                && FileShell.TryGetSetting(nameof(inputPath),out inputPath)
-                && FileShell.TryGetSetting(nameof(tempPath), out tempPath)
                 && FileShell.TryGetSetting(nameof(timerIntervalSetting), out timerIntervalSetting)
                 && int.TryParse(timerIntervalSetting, out int timerInterval)
                 ))
@@ -36,9 +37,6 @@ namespace ScreenRec2
                 Console.ReadLine();
                 return;
             }
-
-            Directory.CreateDirectory(tempPath);
-            Directory.CreateDirectory(inputPath);
 
             var searcher = new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM Win32_VideoController");
             int width=0;
