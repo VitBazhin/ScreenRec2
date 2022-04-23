@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Threading;
 
@@ -34,7 +35,14 @@ namespace ScreenRec2
             {
                 using (var graphics = Graphics.FromImage(bitmap))
                 {
-                    graphics.CopyFromScreen(new Point(_bounds.Left, _bounds.Top), Point.Empty, _bounds.Size);
+                    graphics.CopyFromScreen(new Point(_bounds.Left, _bounds.Top), Point.Empty, _bounds.Size, CopyPixelOperation.SourceCopy);
+                    //var dpiX = graphics.DpiX;
+                    //var dpiY = graphics.DpiY;
+                    //graphics.SmoothingMode = SmoothingMode.HighQuality;
+                    //graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                    //graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+                    //graphics.DrawImageUnscaledAndClipped(imgOrig, new Rectangle(-sdvg, 0, maxShir + sdvg, vysota));
+
                     string name = $"{_tempPath}//screenshot_{_fileCount++}.png";
                     bitmap.Save(name, ImageFormat.Png);
                     inputImagesSequence.Add(name);
