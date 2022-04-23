@@ -2,32 +2,33 @@
 using System.Drawing;
 using System.IO;
 using System.Management;
+using System.Threading;
 
 namespace ScreenRec2
 {
     //Ideas: Приостановка видео
     //Ideas: save or non-save?
 
-    //fix: подобрать нужное время кадров
     //fix: улучшить качество
+    //fix: crossplatforms
     public class Program
     {
         public static void Main(string[] args)
         {
             Console.WriteLine("Info:");
 
-            string outputPath;
-            string timerIntervalSetting;
-            string inputPath;
-            string tempPath;
-
             const string AUDIO_NAME = "audio.wav";
             const string VIDEO_NAME = "video.mp4";
-                
 
+            string outputPath;
+            string timerIntervalSetting;
+            string inputPath = FileShell.CreateTempPath();
+            string tempPath = inputPath + "//Screenshots";
+            
+            Directory.CreateDirectory(tempPath);
+            Directory.CreateDirectory(inputPath);
+            
             if (!(FileShell.TryGetSetting(nameof(outputPath), out outputPath)
-                && FileShell.TryGetSetting(nameof(inputPath),out inputPath)
-                && FileShell.TryGetSetting(nameof(tempPath), out tempPath)
                 && FileShell.TryGetSetting(nameof(timerIntervalSetting), out timerIntervalSetting)
                 && int.TryParse(timerIntervalSetting, out int timerInterval)
                 ))
@@ -36,9 +37,6 @@ namespace ScreenRec2
                 Console.ReadLine();
                 return;
             }
-
-            Directory.CreateDirectory(tempPath);
-            Directory.CreateDirectory(inputPath);
 
             var searcher = new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM Win32_VideoController");
             int width=0;
@@ -81,7 +79,7 @@ namespace ScreenRec2
                 if (readKey.Modifiers == ConsoleModifiers.Control
                     && readKey.Key == ConsoleKey.R)
                 {
-                    Console.WriteLine("Start record");
+                    Console.WriteLine("Start record.");
                     audio.RecordAudio();
                     timer.Start();
                     
@@ -89,18 +87,18 @@ namespace ScreenRec2
                 else if (readKey.Modifiers == ConsoleModifiers.Control
                     && readKey.Key == ConsoleKey.W)
                 {
-                    Console.WriteLine("Stop record");
+                    Console.WriteLine("Stop record.");
                     timer.Dispose();
 
-                    MergeAudioAndVideo.Mergefile(inputPath, outputPath,VIDEO_NAME,AUDIO_NAME);
+                    MergeAudioAndVideo.Mergefile(inputPath, outputPath, VIDEO_NAME, AUDIO_NAME);
 
                     isExit = true;
+                    Console.WriteLine("The video and the audio was saved successfully. Press 'Enter'.");
                 }
             } while (!isExit);
 
             FileShell.DeleteFiles(inputPath);
-
-            Console.WriteLine("The video and the audio was saved successfully. Press 'Enter'");
+            
             Console.ReadLine();
         }
     }

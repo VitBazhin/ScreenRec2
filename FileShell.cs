@@ -53,5 +53,14 @@ namespace ScreenRec2
         {
             return DateTime.Now.ToString("yyyyMMdd_HHmmss");
         }
+
+        /// <summary>
+        /// Create a path for temp files.
+        /// </summary>
+        /// <returns></returns>
+        public static string CreateTempPath()
+        {
+            return Path.GetTempPath() + "//TempDirectory";
+        }
     }
 }
