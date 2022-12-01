@@ -7,15 +7,15 @@ using System.Threading;
 
 namespace ScreenRec2
 {
-    class Video: IVideo
+    class Video : IVideo
     {
         private readonly Stopwatch _watch = new Stopwatch();
 
-        public Video(Rectangle bounds,string videoPath,string tempPath,string videoName)
+        public Video(Rectangle bounds, string videoPath, string tempPath, string videoName)
         {
             _bounds = bounds;
             _outputPath = videoPath;
-            _tempPath= tempPath;
+            _tempPath = tempPath;
             _videoName = videoName;
         }
 
